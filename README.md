@@ -6,14 +6,9 @@ Una tarjeta interactiva de San Valentín con estética “neon” y vibra bootca
 
 ## 📸 Screenshot / Vista previa
 
-> Sube aquí una captura de pantalla de la tarjeta ya corriendo en tu navegador.
+> Captura de pantalla de la tarjeta.
 
 ![Vista de la tarjeta](./assets/vistaTarjeta.png)
-
-**Cómo tomar la captura**
-1. Abre `index.html` en tu navegador.
-2. Ajusta el zoom si es necesario (100% recomendado).
-3. Toma la captura y guárdala como: `assets/screenshot.png`.
 
 ---
 
