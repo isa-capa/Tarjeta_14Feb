@@ -1,0 +1,653 @@
+/* ==========================================================================
+   0) Variables de diseño (Design Tokens)
+   - Centraliza colores, sombras y radios para evitar "magical values"
+   ========================================================================== */
+:root {
+  --bg1: #0b1220;
+  --bg2: #160a1a;
+
+  --card-surface: rgba(255, 255, 255, 0.06);
+  --card-surface2: rgba(255, 255, 255, 0.02);
+  --panel-surface: rgba(15, 23, 42, 0.65);
+
+  --ink: #e5e7eb;
+  --muted: #94a3b8;
+
+  --pink: #ff4fa6;
+  --pink2: #ff86c8;
+  --green: #22c55e;
+
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  --radius: 22px;
+
+  /* Tipografía (si cambias fuentes, mejor mantener nombres consistentes) */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  --font-serif: "Playfair Display", serif;
+
+  /* Z-index (evita guerras de z-index a futuro) */
+  --z-card: 2;
+  --z-confetti: 3;
+  --z-toast: 9999;
+
+  /* Tamaños recurrentes */
+  --space-page: 24px;
+  --space-card: 22px;
+  --radius-soft: 18px;
+
+  /* Botones */
+  --btn-radius: 14px;
+  --btn-padding: 12px 14px;
+  --btn-border: 1px solid rgba(255, 255, 255, 0.12);
+  --btn-bg: rgba(255, 255, 255, 0.08);
+  --btn-bg-hover: rgba(255, 255, 255, 0.11);
+  --btn-border-hover: rgba(255, 255, 255, 0.18);
+}
+
+/* ==========================================================================
+   1) Reset / base
+   - Mantiene consistencia de box model y tipografía
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--ink);
+
+  /* Fondo con capas para efecto “neon night” */
+  background:
+    radial-gradient(1200px 700px at 20% 10%, #2b1b42 0%, transparent 60%),
+    radial-gradient(1000px 650px at 90% 30%, #3a1240 0%, transparent 55%),
+    radial-gradient(900px 600px at 40% 90%, #0b2a3a 0%, transparent 55%),
+    linear-gradient(140deg, var(--bg1), var(--bg2));
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--space-page);
+  overflow-x: hidden;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(24px, 3.6vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   2) Layout
+   - Grid responsive para 2 columnas y colapso a 1 columna en móvil
+   ========================================================================== */
+.wrap {
+  width: min(980px, 100%);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+@media (max-width: 860px) {
+  .wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   3) Cards
+   - Superficie translúcida + borde + shadow
+   - left/right usan padding y layout vertical
+   ========================================================================== */
+.card {
+  background: linear-gradient(180deg, var(--card-surface), var(--card-surface2));
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  position: relative;
+  z-index: var(--z-card);
+}
+
+.left {
+  padding: var(--space-card) var(--space-card) 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.right {
+  padding: var(--space-card);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ==========================================================================
+   4) Badge
+   - Etiqueta con dot iluminado
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+  width: fit-content;
+
+  background: rgba(255, 79, 166, 0.12);
+  border: 1px solid rgba(255, 79, 166, 0.25);
+  color: #ffd1e7;
+  font-size: 13px;
+}
+
+.badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--pink), var(--pink2));
+  box-shadow: 0 0 0 3px rgba(255, 79, 166, 0.15);
+}
+
+/* ==========================================================================
+   5) Imagen principal (Doge) + fallback
+   - Pseudo-elemento crea un glow suave atrás del contenido
+   ========================================================================== */
+.imgBox {
+  margin-top: 8px;
+  border-radius: var(--radius-soft);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.imgBox::before {
+  content: "";
+  position: absolute;
+  inset: -60px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 79, 166, 0.25), transparent 45%),
+    radial-gradient(circle at 70% 80%, rgba(34, 197, 94, 0.18), transparent 40%);
+  filter: blur(8px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.doge {
+  width: min(420px, 100%);
+  max-height: 320px;
+  object-fit: contain;
+
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
+  position: relative;
+  z-index: 1;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.imgFallback {
+  position: relative;
+  z-index: 1;
+  color: rgba(226, 232, 240, 0.9);
+  font-size: 13px;
+}
+
+.imgFallback code {
+  color: #fff;
+  opacity: 0.9;
+}
+
+/* ==========================================================================
+   6) Hint + "kbd"
+   - Micro componente informativo con estilo de teclado
+   ========================================================================== */
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.kbd {
+  font-size: 12px;
+  color: #dbeafe;
+
+  border: 1px solid rgba(219, 234, 254, 0.22);
+  background: rgba(30, 58, 138, 0.18);
+
+  padding: 3px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   7) Header derecho
+   ========================================================================== */
+.panelTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panelTitle h2 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   8) Fortune card
+   - Contenedor central de interacción
+   - Usa ::after para glow
+   ========================================================================== */
+.fortuneCard {
+  border-radius: var(--radius-soft);
+  padding: 16px 16px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--panel-surface);
+
+  position: relative;
+  overflow: hidden;
+
+  min-height: 210px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.fortuneCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(500px 240px at 20% 20%, rgba(255, 79, 166, 0.20), transparent 55%),
+    radial-gradient(380px 240px at 80% 70%, rgba(34, 197, 94, 0.13), transparent 55%);
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   9) Paleta (imagen como botón)
+   - z-index alto dentro de la fortuneCard para estar encima del glow
+   ========================================================================== */
+.lollipopStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 240px;
+
+  position: relative;
+  z-index: 4;
+}
+
+/* Botón "invisible" que envuelve la imagen */
+.lollipopImgBtn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+
+  width: 190px;
+  height: 190px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  z-index: 4;
+}
+
+.lollipopImgBtn:active {
+  transform: translateY(1px);
+}
+
+.lollipopImg {
+  width: 180px;
+  height: auto;
+  display: block;
+
+  user-select: none;
+  -webkit-user-drag: none;
+
+  filter: drop-shadow(0 16px 25px rgba(0, 0, 0, 0.35));
+  position: relative;
+  z-index: 4;
+}
+
+/* ==========================================================================
+   10) Corazón (legacy / opcional)
+   - No se elimina por si tu JS lo usa o lo usarás después.
+   - Si ya no lo usas, se puede limpiar sin afectar el resto.
+   ========================================================================== */
+.heart {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 160px;
+  height: 140px;
+  transform: translateX(-50%);
+}
+
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 80px;
+  height: 120px;
+  background: linear-gradient(180deg, #ff8ecf, #ff4fa6);
+  border-radius: 80px 80px 0 0;
+  top: 0;
+}
+
+.heart::before {
+  left: 40px;
+  transform: rotate(-45deg);
+  transform-origin: 0 100%;
+}
+
+.heart::after {
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: 100% 100%;
+}
+
+.heartHighlight {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  width: 60px;
+  height: 30px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  filter: blur(4px);
+}
+
+/* ==========================================================================
+   11) Palito + brillos (legacy / opcional)
+   ========================================================================== */
+.stick {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  width: 14px;
+  height: 110px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #ffd6ec, #ff9bd6);
+  border-radius: 999px;
+}
+
+.sparkle {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), transparent 30%),
+    radial-gradient(circle at 70% 55%, rgba(255, 255, 255, 0.35), transparent 28%),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.35), transparent 30%);
+  opacity: 0.35;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   12) Textos de fortuna + typing effect.
+   - La clase .typing agrega el cursor parpadeante vía ::after.
+   ========================================================================== */
+.fortuneText {
+  position: relative;
+  z-index: 1;
+
+  text-align: center;
+  padding: 0 12px;
+
+  font-family: var(--font-serif);
+  font-size: 22px;
+  line-height: 1.6;
+  letter-spacing: 0.5px;
+
+  color: #fff;
+  margin-top: 10px;
+
+  text-shadow: 0 4px 20px rgba(255, 79, 166, 0.25);
+  transition: all 0.3s ease;
+}
+
+/* Cursor parpadeante mientras "escribe" */
+.fortuneText.typing::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 1.15em;
+  margin-left: 6px;
+  transform: translateY(3px);
+
+  background: rgba(255, 214, 236, 0.95);
+  border-radius: 2px;
+  animation: blink 0.9s infinite;
+}
+
+/* Opcional: al terminar, el cursor se atenúa */
+.fortuneText.done::after {
+  opacity: 0.35;
+}
+
+.fortuneMeta {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-size: 12.5px;
+  color: rgba(148, 163, 184, 0.95);
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   13) Botones
+   - Estilos base para TODOS los <button>
+   - Variantes: .primary, .success, .tiny
+   ========================================================================== */
+button {
+  border: 0;
+  border-radius: var(--btn-radius);
+  padding: var(--btn-padding);
+  font-size: 14px;
+
+  color: var(--ink);
+  background: var(--btn-bg);
+  border: var(--btn-border);
+
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: var(--btn-bg-hover);
+  border-color: var(--btn-border-hover);
+}
+
+.primary {
+  background: linear-gradient(180deg, rgba(255, 79, 166, 0.95), rgba(255, 134, 200, 0.92));
+  border-color: rgba(255, 79, 166, 0.35);
+  color: #2b0a1b;
+  font-weight: 600;
+}
+
+.success {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #dcfce7;
+}
+
+.tiny {
+  font-size: 12px;
+  padding: 9px 12px;
+  border-radius: 999px;
+}
+
+/* Contenedor de acciones (fila de botones) */
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   14) Link box + footer
+   ========================================================================== */
+.linkBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 12px;
+  border-radius: 16px;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.linkLabel {
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 12px;
+}
+
+.linkBox code {
+  color: #e2e8f0;
+  font-size: 12px;
+  opacity: 0.9;
+  word-break: break-all;
+}
+
+.footerNote {
+  margin-top: auto;
+  color: rgba(148, 163, 184, 0.9);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   15) Toast (copiado ✅)
+   - Usar .show para activar animación
+   ========================================================================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+
+  z-index: var(--z-toast);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ==========================================================================
+   16) Confetti canvas
+   - pointer-events: none para no bloquear clicks
+   - z-index encima de cards pero debajo de elementos interactivos si aplica
+   ========================================================================== */
+canvas#confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-confetti);
+}
+
+/* ===== Doge follow cursor ===== */
+.imgBox{
+  position: relative;          /* importante para calcular dentro */
+  overflow: hidden;            /* para que no se salga */
+}
+
+.doge{
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  transition: transform 120ms ease-out; /* suavidad */
+  cursor: pointer;
+}
+
+/* ===== Doge shake ===== */
+.doge.shake{
+  animation: dogeShake 0.45s ease-in-out;
+}
+
+@keyframes dogeShake{
+  0%   { transform: translate3d(var(--dx,0px), var(--dy,0px), 0) rotate(0deg); }
+  15%  { transform: translate3d(calc(var(--dx,0px) - 4px), calc(var(--dy,0px) + 2px), 0) rotate(-2deg); }
+  30%  { transform: translate3d(calc(var(--dx,0px) + 4px), calc(var(--dy,0px) - 2px), 0) rotate(2deg); }
+  45%  { transform: translate3d(calc(var(--dx,0px) - 4px), calc(var(--dy,0px) - 2px), 0) rotate(-2deg); }
+  60%  { transform: translate3d(calc(var(--dx,0px) + 4px), calc(var(--dy,0px) + 2px), 0) rotate(2deg); }
+  75%  { transform: translate3d(calc(var(--dx,0px) - 2px), calc(var(--dy,0px) + 1px), 0) rotate(-1deg); }
+  100% { transform: translate3d(var(--dx,0px), var(--dy,0px), 0) rotate(0deg); }
+}
+
+/* opcional: respeta usuarios con reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .doge{ transition: none; }
+  .doge.shake{ animation: none; }
+}
+

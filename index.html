@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 1) Metadatos y estilos
+       - Mantén el <title> descriptivo para SEO y pestañas del navegador.
+       - Cargamos CSS local y fuentes externas. -->
+  <title>💖 Tarjeta 14 de Febrero | Bootcamp Edition</title>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Great+Vibes&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<body>
+  <!-- 2) Canvas de confetti
+       - El canvas se controla desde JS. Mantenerlo al inicio evita overlays raros.
+       - Sugerencia: en CSS, colócalo fixed y con pointer-events: none. -->
+  <canvas id="confetti"></canvas>
+
+  <!-- 3) Layout principal
+       - Contiene dos secciones (izquierda: introducción / derecha: interacción).
+       - Usamos <main> para accesibilidad y estructura semántica. -->
+  <main class="wrap">
+    <!-- 3.1) Tarjeta izquierda: contexto visual + instrucciones -->
+    <section class="card left" aria-label="Introducción">
+      <div class="badge" aria-label="Etiqueta del evento">
+        <span class="dot" aria-hidden="true"></span>
+        Bootcamp • 14 de febrero 💘
+      </div>
+
+      <h1>Feliz 14 💖<br />¡Tarjeta para el team del bootcamp!</h1>
+
+      <p>
+        Abre la <strong>paleta de corazón rosa</strong> y te saldrá un mensaje random
+        <em>especial para ti 💕</em>.
+      </p>
+
+      <!-- 3.1.1) Imagen principal + fallback
+           - El fallback se muestra desde JS si la imagen no carga. -->
+      <figure class="imgBox">
+        <img
+          class="doge"
+          src="/assets/doge01.png"
+          alt="Doge con paletas de corazón"
+          loading="lazy"
+        />
+
+        <figcaption class="imgFallback" id="imgFallback" hidden>
+          No encontré la imagen 😅 Revisa que exista: <code>assets/doge01.png</code>
+        </figcaption>
+      </figure>
+
+      <div class="hint">
+        Tip: puedes abrirla todas las veces que quieras ✨
+        <span class="kbd">Click / Enter</span>
+      </div>
+    </section>
+
+    <!-- 3.2) Tarjeta derecha: interacción principal -->
+    <section class="card right" aria-label="Paleta de la fortuna">
+      <header class="panelTitle">
+        <h2>🍭 Paleta de la Fortuna</h2>
+        <button class="tiny" id="btnNew" type="button">Dime mi fortuna</button>
+      </header>
+
+      <!-- 3.2.1) Contenedor de la fortuna
+           - aria-live="polite" permite anunciar cambios del texto sin ser invasivo (lectores de pantalla). -->
+      <section class="fortuneCard" aria-live="polite" aria-label="Resultado de la fortuna">
+        <div class="lollipopStage">
+          <button
+            class="lollipopImgBtn"
+            id="lollipop"
+            type="button"
+            aria-label="Abrir paleta"
+          >
+            <img
+              class="lollipopImg"
+              src="/assets/paletaRosa.png"
+              alt="Paleta rosa"
+              draggable="false"
+            />
+          </button>
+        </div>
+
+        <p class="fortuneText" id="fortuneText">
+          Haz click en la paleta para revelar tu frase 💗
+        </p>
+
+        <p class="fortuneMeta" id="fortuneMeta">
+          Consejo: compártela con tu squad 🤝
+        </p>
+
+        <!-- 3.2.2) Acciones
+             - Mantengo los mismos IDs para no romper tu script.js. -->
+        <div class="actions" aria-label="Acciones">
+          <button class="primary" id="btnOpen" type="button">Abrir paleta</button>
+          <button class="success" id="btnShare" type="button">Compartir</button>
+          <button id="btnCopy" type="button">Copiar link</button>
+        </div>
+      </section>
+
+      <!-- 3.2.3) Mensaje fijo para el team
+           - FIX: había una comilla extra en class="noteBox""
+           - También cerré bien las comillas del texto para evitar HTML inválido. -->
+      <section class="linkBox" aria-label="Mensaje para el equipo">
+        <div class="noteBox">
+          ¡Feliz día Team!, Muchas gracias por estas semanas juntos, en verdad he aprendido mucho de cada uno de ustedes
+          y me siento muy afortunada de haberme topado con personas tan unicas, inteligente y decidas, Gracias a todos
+          por su amistad 🚀
+        </div>
+      </section>
+
+      <p class="footerNote">
+        Para ustedes con mucho cariño CH-63 de parte de IsaDev 💞
+      </p>
+    </section>
+  </main>
+
+  <!-- 4) Toast de UI
+       - Mensaje corto; se muestra/oculta desde JS.
+       - aria-live ayuda a que se anuncie cuando aparece. -->
+  <div class="toast" id="toast" role="status" aria-live="polite">Copiado ✅</div>
+
+  <!-- 5) Scripts
+       - Dejarlo al final para que el DOM cargue antes del JS. -->
+  <script src="script.js"></script>
+</body>
+</html>
