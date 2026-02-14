@@ -6,7 +6,7 @@ Una tarjeta interactiva de San Valentín con estética “neon” y vibra bootca
 
 ## 📸 Screenshot / Vista previa
 
-> Captura de pantalla de la tarjeta.
+> Captura de pantalla de la vista de la tarjeta:
 
 ![Vista de la tarjeta](./assets/vistaTarjeta.png)
 
